@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting Started with Chart JS with www.chartjs3.com</title>
+
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+	type="text/javascript"></script>
+
+<script type="text/javascript"
+	src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+</head>
+
+<body>
+	<div id="chart_div" style="width: 1200px; height: 500px;"></div>
+
+</body>
+<script th:inline="javascript" type="text/javascript">
+
+ 
+ $(document).ready(function () {
+	  //your code here
+	  
+	  var map = [[${data}]];
+	    console.log(map);
+	    
+	 
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+    	  
+    	  
+    	  //var db = $.makeArray( map );
+    	  var db = [];
+
+  		$.each( map, function( key, value ) {
+  			db.push(new Array(key, value[0] , value[1] ,value[2] ,value[3]));
+  		});
+  	
+		db.sort();
+  
+
+    	
+           var data = google.visualization.arrayToDataTable(db,true);
+     	   console.log(db);
+  
+          
+      ///  var data = google.visualization.arrayToDataTable(db, true);
+      //  data.addColumn('string', [dps].x);
+     //   data.addColumn('number', [dps].y);
+     
+        var options = {
+          legend: 'none',
+        };
+
+        var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+      
+	});
+    </script>
+
+</html>
