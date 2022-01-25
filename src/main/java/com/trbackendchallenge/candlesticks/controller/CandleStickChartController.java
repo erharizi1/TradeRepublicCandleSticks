@@ -65,7 +65,7 @@ public class CandleStickChartController {
 	 * have attach them timestamp(string) then first i check if there is some
 	 * candleStick existing already for the quote that correspond of some instrument
 	 * , still check if there exist candlestick on the minute(date) that i get the
-	 * quote if candlestick exisit for that minute i update the price otherwise i
+	 * quote, if candlestick exisit for that minute i update the price otherwise i
 	 * create a new candlestick for that minute . If instrument dont exist in db , i
 	 * just create totally new candlestick and save them in reactive way.
 	 * 
@@ -93,16 +93,19 @@ public class CandleStickChartController {
 					String str = timestamp.toString().substring(0, 16);
 					QuoteEvent quote = objectMapper.readValue(message, QuoteEvent.class);
 					quote.setDate(str);
-
+					
+					//check if candlesticks exist for current instrument  
 					candlerepo.existsByIsin(quote.getData().getIsin()).subscribe(instrumentExist -> {
 						if (instrumentExist) {
 							System.out.println("exist ");
 							System.out.println(quote.getData().getIsin());
 
+							//if it exist check if candlestick of instrument exist on the current minute
 							candlerepo.findByIsinAndOpenDate(quote.getData().getIsin(), quote.getDate()).hasElement()
-									.subscribe(ca -> {
+									.subscribe(candleExistOnCurrentMinute -> {
 
-										if (ca) {
+										//if the candlestick exist compare and update it
+										if (candleExistOnCurrentMinute) {
 											candlerepo.findByIsinAndOpenDate(quote.getData().getIsin(), quote.getDate())
 													.flatMap(candle -> {
 
@@ -138,7 +141,7 @@ public class CandleStickChartController {
 													});
 
 										} else {
-
+											//if there isnt any candlestick for current minute create a new one
 											logger.info("Quote dont exist in this minute so create new candlestick ---"
 													+ quote.getData().getIsin());
 
@@ -156,19 +159,14 @@ public class CandleStickChartController {
 
 																				Double low = Double.min(lowprice,quote.getData().getPrice());
 
-																				newcandle.setIsin(
-																						quote.getData().getIsin());
+																				newcandle.setIsin(quote.getData().getIsin());
 																				newcandle.setOpendate(quote.getDate());
-																				newcandle.setClosedate(
-																						service.calculateClosedDate(
-																								quote.getDate()));
-
+																				newcandle.setClosedate(service.calculateClosedDate(quote.getDate()));
 																				newcandle.setHighPrice(max);
 																				newcandle.setLowPrice(low);
 																				newcandle.setOpenPrice(openprice);
 
-																				newcandle.setClosingPrice(
-																						quote.getData().getPrice());
+																				newcandle.setClosingPrice(quote.getData().getPrice());
 
 																				candlerepo.save(newcandle).subscribe();
 
