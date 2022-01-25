@@ -61,10 +61,10 @@ public class CandleStickChartController {
 	
 	/*
 	 * The way that i have handled the stream of data and convert them in minute
-	 * candleSticks chart goes like this. For each quote stream i have recieved i
-	 * have attach them timestamp(string) then first i check if there is some
-	 * candleStick existing already for the quote that correspond of some instrument
-	 * , still check if there exist candlestick on the minute(date) that i get the
+	 * candleSticks chart goes like this. For each quote stream which i receive i
+	 * have attach them timestamp(string),  then first i check if there is some
+	 * candleStick existing already for the quote that correspond to some instrument
+	 * , after that i  check if there exist candlestick on the minute(date) that i have received the
 	 * quote, if candlestick exisit for that minute i update the price otherwise i
 	 * create a new candlestick for that minute . If instrument dont exist in db , i
 	 * just create totally new candlestick and save them in reactive way.
